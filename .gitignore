@@ -1,0 +1,4 @@
+__pycache__
+
+# yes .. I know, I did not find enough courage to set a global .gitignore
+.vscode/
