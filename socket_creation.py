@@ -17,9 +17,9 @@ UDP = socket.SOCK_DGRAM
 RAW = socket.SOCK_RAW
 
 def create_listen_socket(ip: str, 
-                  port: int, 
-                  socket_type: socket.SocketKind = TCP,
-                  socket_setsockopt: List[int] = [socket.SO_REUSEADDR]) -> socket.socket:
+                         port: int, 
+                         socket_type: socket.SocketKind = TCP,
+                         socket_setsockopt: List[int] = [socket.SO_REUSEADDR]) -> socket.socket:
     def get_ip_type(ip: str = ip) -> tuple[socket.AddressFamily, str]:
         ip_type = socket.getaddrinfo(ip, None)
         address_family = ip_type[0][0]
