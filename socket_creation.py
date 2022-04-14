@@ -58,7 +58,7 @@ def create_all_socket(ip: str, port: Union[int, tuple[int, int]], *args) -> List
         raise TypeError('port must be int or tuple')
     for port in range(min, max + 1):
         try:
-            sockets.append(create_listen_socket(ip, port))
+            sockets.append(create_listen_socket(ip, port, *args))
             printd(f'Socket port {port} created')
         except Exception as err:
             print(f'unable to create socket on port {port}\
