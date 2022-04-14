@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-DEBUG = True
+DEBUG = False
+
 
 def printd(msg: str, *args) -> None:
     if DEBUG:

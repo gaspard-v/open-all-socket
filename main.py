@@ -3,7 +3,7 @@
 
 import sys
 import socket_creation
-from utils import printd
+from utils import printd, DEBUG
 import argparse
 from ipaddress import ip_address
 
@@ -33,7 +33,10 @@ def parse_args():
                         help='afficher les messages de debug', required=False)
     parser.add_argument(
         '-r', '--range', type=port_ranges, nargs='+', help="interval de port à écouter", required=False)
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.port == None and args.range == None:
+        parser.error("port ou range requis")
+    return args
 
 
 def main():
