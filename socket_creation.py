@@ -13,6 +13,7 @@ import socket
 from typing import Union, List
 from utils import printd
 import sys
+import select
 
 TCP = socket.SOCK_STREAM
 UDP = socket.SOCK_DGRAM
@@ -34,6 +35,7 @@ def create_listen_socket(ip: str,
         s.setsockopt(socket.SOL_SOCKET, opt, 1)
     s.bind((address, port))
     s.listen(1)
+    s.setblocking(False)
     printd(f'Socket port {port} created')
     return s
 
@@ -64,3 +66,12 @@ def create_all_socket(ip: str, port: Union[int, tuple[int, int]], *args) -> List
             print(f'unable to create socket on port {port}\
                         \nError message: {err}\n', file=sys.stderr)
     return sockets
+
+
+def display_input_sockets(socket_list):
+    while True:
+        rlist, wlist, xlist = select.select(socket_list, [], [])
+        for socket in rlist:
+            connection, client_address = socket.accept()
+            printd(f'connection from {client_address}')
+            print(connection.recv(1024))

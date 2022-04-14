@@ -35,8 +35,10 @@ def parse_args():
     #                     nargs='+', help='option(s) à appliquer', required=False)
     parser.add_argument('-i', '--ip', type=ip_address,
                         help='adresse IP à écouter', required=True)
-    parser.add_argument('-d', '--debug', action='store_true',
+    parser.add_argument('--debug', action='store_true',
                         help='afficher les messages de debug', required=False)
+    parser.add_argument('--no-close', action='store_true',
+                        help='ne ferme pas les sockets à la fin du programme', required=False, default=False)
     parser.add_argument(
         '-r', '--range', type=port_ranges, nargs='+', help="interval de port à écouter", required=False)
     args = parser.parse_args()
@@ -72,7 +74,10 @@ def main():
                 append_socket(socket_list, port, str(
                     args.ip), port_dict[args.type])
 
-    socket_creation.close_sockets(socket_list)
+    socket_creation.display_input_sockets(socket_list)
+
+    if(not args.no_close):
+        socket_creation.close_sockets(socket_list)
 
 
 if __name__ == '__main__':
