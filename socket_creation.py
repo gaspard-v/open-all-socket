@@ -34,6 +34,7 @@ def create_listen_socket(ip: str,
         s.setsockopt(socket.SOL_SOCKET, opt, 1)
     s.bind((address, port))
     s.listen(1)
+    printd(f'Socket port {port} created')
     return s
 
 
@@ -59,7 +60,6 @@ def create_all_socket(ip: str, port: Union[int, tuple[int, int]], *args) -> List
     for port in range(min, max + 1):
         try:
             sockets.append(create_listen_socket(ip, port, *args))
-            printd(f'Socket port {port} created')
         except Exception as err:
             print(f'unable to create socket on port {port}\
                         \nError message: {err}\n', file=sys.stderr)

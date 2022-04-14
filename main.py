@@ -3,9 +3,15 @@
 
 import sys
 import socket_creation
-from utils import printd, DEBUG
+import utils
 import argparse
 from ipaddress import ip_address
+
+port_dict = {
+    'tcp': socket_creation.TCP,
+    'udp': socket_creation.UDP,
+    'raw': socket_creation.RAW
+}
 
 
 def port_ranges(s):
@@ -39,10 +45,34 @@ def parse_args():
     return args
 
 
+def append_socket(socket_list, port, ip, socket_type):
+    try:
+        socket_list.append(
+            socket_creation.create_listen_socket(ip, port, socket_type))
+    except Exception as err:
+        print(f'unable to create socket on port {port}\
+                \nError message: {err}\n', file=sys.stderr)
+
+
 def main():
-    parse_args()
-    # socket_list = socket_creation.create_all_socket('::1', (10, 20))
-    # socket_creation.close_sockets(socket_list)
+    args = parse_args()
+    if(args.debug):
+        utils.DEBUG = True
+    socket_list = []
+
+    if args.port != None:
+        for port in args.port:
+            append_socket(socket_list, port, str(
+                args.ip), port_dict[args.type])
+
+    if args.range != None:
+        for port_range in args.range:
+            port_min, port_max = port_range
+            for port in range(port_min, port_max + 1):
+                append_socket(socket_list, port, str(
+                    args.ip), port_dict[args.type])
+
+    socket_creation.close_sockets(socket_list)
 
 
 if __name__ == '__main__':
