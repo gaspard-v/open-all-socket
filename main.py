@@ -6,6 +6,7 @@ import socket_creation
 import utils
 import argparse
 from ipaddress import ip_address
+import signal
 
 port_dict = {
     'tcp': socket_creation.TCP,
@@ -14,17 +15,25 @@ port_dict = {
 }
 
 
-def port_ranges(s):
-    try:
-        x, y = map(int, s.split(','))
-        if(x >= y):
-            raise ValueError
-        return x, y
-    except:
-        raise argparse.ArgumentTypeError("ports ranges must be x,y")
+def sig_handler(signum, frame):
+    if signal.SIGINT:
+        utils.printd(
+            f'recieve SIGINT, program is stopping ...')
+        socket_creation.stop = True
+
+
+signal.signal(signal.SIGINT, sig_handler)
 
 
 def parse_args():
+    def port_ranges(s):
+        try:
+            x, y = map(int, s.split(','))
+            if(x >= y):
+                raise ValueError
+            return x, y
+        except:
+            raise argparse.ArgumentTypeError("ports ranges must be x,y")
     parser = argparse.ArgumentParser(
         description='créer des sockets en écoute, peut être utilisé pour tester des règles de par-feu')
     parser.add_argument('-p', '--port', type=int,
@@ -52,7 +61,7 @@ def append_socket(socket_list, port, ip, socket_type):
         socket_list.append(
             socket_creation.create_listen_socket(ip, port, socket_type))
     except Exception as err:
-        print(f'unable to create socket on port {port}\
+        print(f'unable to create server on port {port}\
                 \nError message: {err}\n', file=sys.stderr)
 
 

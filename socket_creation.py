@@ -19,6 +19,8 @@ TCP = socket.SOCK_STREAM
 UDP = socket.SOCK_DGRAM
 RAW = socket.SOCK_RAW
 
+stop = False
+
 
 def create_listen_socket(ip: str,
                          port: int,
@@ -45,9 +47,9 @@ def close_sockets(socket_list: List[socket.socket]) -> None:
         address, port, *rest = socket.getsockname()
         try:
             socket.close()
-            printd(f'Socket port {port} closed')
+            printd(f'server port {port} closed')
         except:
-            print(f'unable to close socket port {port}', file=sys.stderr)
+            print(f'unable to close server port {port}', file=sys.stderr)
 
 
 def create_all_socket(ip: str, port: Union[int, tuple[int, int]], *args) -> List[socket.socket]:
@@ -69,9 +71,26 @@ def create_all_socket(ip: str, port: Union[int, tuple[int, int]], *args) -> List
 
 
 def display_input_sockets(socket_list):
-    while True:
-        rlist, wlist, xlist = select.select(socket_list, [], [])
-        for socket in rlist:
-            connection, client_address = socket.accept()
-            printd(f'connection from {client_address}')
-            print(connection.recv(1024))
+    connection_list = []
+    while not stop:
+        rlist, wlist, xlist = select.select(socket_list, [], [], 1)
+        for conn in rlist:
+            connection, client_address = conn.accept()
+            address, port, _, _ = client_address
+            printd(f'connection from [{address}:{port}]')
+            connection.setblocking(False)
+            connection_list.append(connection)
+        if not connection_list:
+            continue
+        rconn, wconn, xconn = select.select(connection_list, [], [], 1)
+        for conn in rconn:
+            address, port, _, _ = conn.getpeername()
+            try:
+                data = conn.recv(1024)
+                if len(data) == 0:
+                    raise Exception
+                print(f"receive from [{address}:{port}] {data}")
+            except Exception as e:
+                conn.close()
+                connection_list.remove(conn)
+                printd(f"connection reset [{address}:{port}]")
