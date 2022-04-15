@@ -63,7 +63,6 @@ def append_socket(socket_list, port, ip, socket_type):
     except Exception as err:
         print(f'unable to create server on port {port}\
                 \nError message: {err}\n', file=sys.stderr)
-        exit(1)
 
 
 def main():

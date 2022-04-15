@@ -67,7 +67,6 @@ def create_all_socket(ip: str, port: Union[int, tuple[int, int]], *args) -> List
         except Exception as err:
             print(f'unable to create socket on port {port}\
                         \nError message: {err}\n', file=sys.stderr)
-            exit(1)
     return sockets
 
 
