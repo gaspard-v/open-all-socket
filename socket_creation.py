@@ -36,7 +36,7 @@ def create_listen_socket(ip: str,
     for opt in socket_setsockopt:
         s.setsockopt(socket.SOL_SOCKET, opt, 1)
     s.bind((address, port))
-    s.listen(1)
+    s.listen(5)
     s.setblocking(False)
     printd(f'Socket port {port} created')
     return s
